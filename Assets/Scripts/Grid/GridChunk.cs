@@ -26,25 +26,28 @@ namespace Assets.Scripts.Grid {
                 for (int h = 0; h < _grid.GetLength(1); h++) {
                     float x = _center.x + w * cellSize;
                     float y = _center.y + h * cellSize;
-                    _grid[w, h] = new GridElement(x, y, null, textGroup);
+                    _grid[w, h] = new GridElement(x, y, textGroup);
                 }
             }
             DrawGrid();
+            Debug.DrawLine(new Vector3(_center.x + _offsetX, _center.y - _offsetY), new Vector3(_center.x - _offsetX, _center.y - _offsetY), Color.white, 100f);
+            Debug.DrawLine(new Vector3(_center.x - _offsetX, _center.y + _offsetY), new Vector3(_center.x - _offsetX, _center.y - _offsetY), Color.white, 100f);
         }
 
-        public void SetValue(Vector3 position, GridObject o, bool overrideObject = false)
+        public void SetValue(Vector3 position, GridObject obj, Direction dir, bool overrideObject = false)
         {
             int x = Mathf.FloorToInt(((position - (Vector3) _center).x - _offsetX) / _cellSize);
             int y = Mathf.FloorToInt(((position - (Vector3) _center).y - _offsetY) / _cellSize);
             if (_grid[x, y].Obj == null || overrideObject) {
-                _grid[x, y].Obj = o;
+                _grid[x, y].Obj = obj;
+                _grid[x, y].Dir = dir;
                 DrawGrid();
             }
         }
 
         public void DrawGrid()
         {
-            for (int i = _textGroup.childCount - 1; i > 0; i--) {
+            for (int i = _textGroup.childCount - 1; i >= 0; i--) {
                 Object.Destroy(_textGroup.GetChild(i).gameObject);
             }
             for (int w = 0; w < _grid.GetLength(0); w++) {
@@ -52,8 +55,6 @@ namespace Assets.Scripts.Grid {
                     _grid[w, h].Draw(_cellSize, new Vector2(_offsetX, _offsetY));
                 }
             }
-            Debug.DrawLine(new Vector3(_center.x + _offsetX, _center.y - _offsetY), new Vector3(_center.x - _offsetX, _center.y - _offsetY), Color.white, 100f);
-            Debug.DrawLine(new Vector3(_center.x - _offsetX, _center.y + _offsetY), new Vector3(_center.x - _offsetX, _center.y - _offsetY), Color.white, 100f);
         }
     }
 
@@ -61,13 +62,13 @@ namespace Assets.Scripts.Grid {
         public float X;
         public float Y;
         public GridObject Obj;
+        public Direction Dir;
         private Transform _parent;
 
-        public GridElement(float x, float y, GridObject o, Transform p)
+        public GridElement(float x, float y, Transform p)
         {
             X = x;
             Y = y;
-            Obj = o;
             _parent = p;
         }
 
@@ -76,9 +77,9 @@ namespace Assets.Scripts.Grid {
             Debug.DrawLine(new Vector3(X + offset.x, Y + offset.y), new Vector3(X + offset.x + cellSize, Y + offset.y), Color.white, 100f);
             Debug.DrawLine(new Vector3(X + offset.x, Y + offset.y), new Vector3(X + offset.x, Y + offset.y + cellSize), Color.white, 100f);
             if (Obj != null) {
-                Obj.CreateObject(new Vector3(X + offset.x + cellSize / 2, Y + offset.y + cellSize / 2), "Text_(" + X + "," + Y + ")", _parent, cellSize / 4);
-                Obj.DebugText(24);
-                Obj.DrawVisual();
+                Obj.CreateObject(new Vector3(X + offset.x + cellSize / 2, Y + offset.y + cellSize / 2), "Text_(" + X * cellSize + "," + Y * cellSize + ")", _parent, cellSize / 4);
+                Obj.DebugText(16);
+                Obj.DrawVisual(Dir);
             }
         }
     }

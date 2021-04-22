@@ -1,27 +1,29 @@
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Grid {
-    public enum Direction {
-        North,
-        East,
-        South,
-        West
-    }
-
     [CreateAssetMenu]
     public class GridObject : ScriptableObject {
         public string DebugString;
-        public Direction Direction;
         public GameObject Visual;
+        public bool Active;
 
         private Transform _transform;
 
-        public void DrawVisual()
+        public void DrawVisual(Direction dir)
         {
             if (Visual == null) return;
             Transform modelObj = Instantiate(Visual).transform;
             modelObj.SetParent(_transform);
             modelObj.localPosition = Vector3.zero;
+            modelObj.eulerAngles = dir switch
+            {
+                Direction.North => new Vector3(0, 0, 0),
+                Direction.East  => new Vector3(0, 0, 270),
+                Direction.South => new Vector3(0, 0, 180),
+                Direction.West  => new Vector3(0, 0, 90),
+                _               => new Vector3(0, 0, 0)
+            };
         }
 
         public void DebugText(int fontSize = 20)
@@ -37,7 +39,6 @@ namespace Assets.Scripts.Grid {
 
         public void CreateObject(Vector3 position, string objName = "WorldText", Transform parent = null, float scale = 1)
         {
-            if (_transform == null) return;
             _transform = new GameObject(objName).transform;
             _transform.SetParent(parent, false);
             _transform.position = position;

@@ -18,6 +18,8 @@ namespace Assets.Scripts {
             if (_objectToFollow == null) return;
             Vector3 desiredPosition = _objectToFollow.position + _offset;
             transform.position = Vector3.Lerp(transform.position, desiredPosition, _smoothSpeed * Time.deltaTime);
+
+            //if (Input.mouseScrollDelta != Vector2.zero) Debug.Log(Input.mouseScrollDelta);
         }
     }
 }

@@ -12,8 +12,6 @@ namespace Assets.Scripts {
             _movementDir.y = Input.GetAxisRaw("Vertical") * _moveSpeed;
 
             transform.position += _movementDir * Time.deltaTime;
-
-            if (Input.mouseScrollDelta != Vector2.zero) Debug.Log(Input.mouseScrollDelta);
         }
     }
 }

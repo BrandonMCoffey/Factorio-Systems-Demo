@@ -7,7 +7,7 @@ namespace Assets.Scripts.Grid {
         [SerializeField] private int _chunkHeight = 32;
         [SerializeField] private float _cellSize = 0.5f;
         [SerializeField] private Vector2 _center = Vector2.zero;
-        [SerializeField] private GridObject _objectToPlace = null;
+        [SerializeField] private GridPlacement _gridPlacement = null;
 
         private GridChunk _chunk;
 
@@ -20,17 +20,12 @@ namespace Assets.Scripts.Grid {
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0) && !IsMouseOverUI()) {
-                _chunk.SetValue(GetMouseWorldPosition(Input.mousePosition, Camera.main), _objectToPlace);
+            if (_gridPlacement.Active && Input.GetMouseButtonDown(0) && !IsMouseOverUI()) {
+                _chunk.SetValue(GetMouseWorldPosition(Input.mousePosition, Camera.main), _gridPlacement.SelectedObject, _gridPlacement.Direction);
             }
             if (Input.GetMouseButtonDown(1) && !IsMouseOverUI()) {
-                _chunk.SetValue(GetMouseWorldPosition(Input.mousePosition, Camera.main), null, true);
+                _chunk.SetValue(GetMouseWorldPosition(Input.mousePosition, Camera.main), null, Direction.North, true);
             }
-        }
-
-        public void SelectObjectToPlace(GridObject o)
-        {
-            _objectToPlace = o;
         }
 
         private static Vector3 GetMouseWorldPosition(Vector3 screenPosition, Camera worldCamera)
