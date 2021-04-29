@@ -1,43 +1,63 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Grid {
     public class GridMap : MonoBehaviour {
-        [SerializeField] private int _chunkWidth = 64;
-        [SerializeField] private int _chunkHeight = 32;
-        [SerializeField] private float _cellSize = 0.5f;
-        [SerializeField] private Vector2 _center = Vector2.zero;
-        [SerializeField] private GridPlacement _gridPlacement = null;
-
-        private GridChunk _chunk;
+        private Dictionary<Position, GridChunk> _chunkGrid;
 
         private void Start()
         {
-            Transform textGroup = new GameObject("Grid Display").transform;
-            _chunk = new GridChunk(_chunkWidth, _chunkHeight, _cellSize, _center, textGroup);
-            _chunk.DrawGrid();
+            _chunkGrid = new Dictionary<Position, GridChunk>();
+            AddChunk(0, 0);
+            AddChunk(-1, 0);
+            AddChunk(-1, -1);
+            AddChunk(0, -1);
         }
 
-        private void Update()
+        public void AddChunk(int x, int y)
         {
-            if (_gridPlacement.Active && Input.GetMouseButtonDown(0) && !IsMouseOverUI()) {
-                _chunk.SetValue(GetMouseWorldPosition(Input.mousePosition, Camera.main), _gridPlacement.SelectedObject, _gridPlacement.Direction);
+            Position pos = new Position(x, y);
+            if (_chunkGrid.ContainsKey(pos)) return;
+
+            GridChunk gridChunk = new GameObject("Chunk(" + x + "," + y + ")").AddComponent<GridChunk>();
+            gridChunk.transform.SetParent(transform);
+
+            gridChunk.NorthNeighbor = FindNeighbor(pos, Direction.North);
+            gridChunk.EastNeighbor = FindNeighbor(pos, Direction.East);
+            gridChunk.SouthNeighbor = FindNeighbor(pos, Direction.South);
+            gridChunk.WestNeighbor = FindNeighbor(pos, Direction.West);
+            if (gridChunk.NorthNeighbor != null) gridChunk.NorthNeighbor.SouthNeighbor = gridChunk;
+            if (gridChunk.EastNeighbor != null) gridChunk.EastNeighbor.WestNeighbor = gridChunk;
+            if (gridChunk.SouthNeighbor != null) gridChunk.SouthNeighbor.NorthNeighbor = gridChunk;
+            if (gridChunk.WestNeighbor != null) gridChunk.WestNeighbor.EastNeighbor = gridChunk;
+
+            Vector3 worldPos = Vector3.zero;
+            worldPos.x = x * 16;
+            worldPos.y = y * 16;
+            gridChunk.transform.position = worldPos;
+            _chunkGrid.Add(pos, gridChunk);
+        }
+
+        private GridChunk FindNeighbor(Position pos, Direction dir)
+        {
+            switch (dir) {
+                case Direction.North:
+                    pos.Y++;
+                    break;
+                case Direction.East:
+                    pos.X++;
+                    break;
+                case Direction.South:
+                    pos.Y--;
+                    break;
+                case Direction.West:
+                    pos.X--;
+                    break;
             }
-            if (Input.GetMouseButtonDown(1) && !IsMouseOverUI()) {
-                _chunk.SetValue(GetMouseWorldPosition(Input.mousePosition, Camera.main), null, Direction.North, true);
-            }
-        }
 
-        private static Vector3 GetMouseWorldPosition(Vector3 screenPosition, Camera worldCamera)
-        {
-            Vector3 worldPosition = worldCamera.ScreenToWorldPoint(screenPosition);
-            worldPosition.z = 0;
-            return worldPosition;
-        }
-
-        public static bool IsMouseOverUI()
-        {
-            return EventSystem.current.IsPointerOverGameObject();
+            return _chunkGrid.ContainsKey(pos) ? _chunkGrid[pos] : null;
         }
     }
 }

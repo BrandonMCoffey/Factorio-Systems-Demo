@@ -208,11 +208,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
         m_TargetAssemblyTypeName: Assets.Scripts.Grid.GridPlacement, Assembly-CSharp
-        m_MethodName: SelectObject
+        m_MethodName: SetFactory
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 51456a613c104584eb630cbab0d8dc8b, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Grid.GridObject, Assembly-CSharp
+          m_ObjectArgument: {fileID: 11400000, guid: 379d66b8f63f6214f951284adb5f5d25, type: 2}
+          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Factory.Base.FactoryObject,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -581,7 +582,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -625,6 +626,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectToFollow: {fileID: 1236277381}
+  _zOffset: 10
+  _zMinMax: {x: 5, y: 25}
   _smoothSpeed: 10
 --- !u!1 &557006329
 GameObject:
@@ -777,11 +780,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
         m_TargetAssemblyTypeName: Assets.Scripts.Grid.GridPlacement, Assembly-CSharp
-        m_MethodName: SelectObject
-        m_Mode: 2
+        m_MethodName: DisableFactoryPlacement
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 589db0aa7060c86498ebf1fe88732353, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Grid.GridObject, Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -910,11 +913,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
         m_TargetAssemblyTypeName: Assets.Scripts.Grid.GridPlacement, Assembly-CSharp
-        m_MethodName: SelectObject
+        m_MethodName: SetFactory
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 38e17f60c90728b429f74047d7661f6b, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Grid.GridObject, Assembly-CSharp
+          m_ObjectArgument: {fileID: 7259593811706561338, guid: 4d9f12326a9b91143a7c1c942d40557c, type: 3}
+          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Factory.Base.FactoryObject,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -958,6 +962,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 763400428}
   m_CullTransparentMesh: 1
+--- !u!1 &841895388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 841895389}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &841895389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841895388}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1055218680
 GameObject:
   m_ObjectHideFlags: 0
@@ -1203,7 +1237,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Resource
+  m_Text: Crafter
 --- !u!222 &1243823560
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1297,11 +1331,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
         m_TargetAssemblyTypeName: Assets.Scripts.Grid.GridPlacement, Assembly-CSharp
-        m_MethodName: SelectObject
+        m_MethodName: SetFactory
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 58ce80957c4028543a7f0a85d0292a32, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Grid.GridObject, Assembly-CSharp
+          m_ObjectArgument: {fileID: -4495837220811534363, guid: e28f95b8d968758418b7732b5ccc67df, type: 3}
+          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Factory.Base.FactoryObject,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1355,7 +1390,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1587649894}
   - component: {fileID: 1587649893}
-  - component: {fileID: 1587649895}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -1375,11 +1409,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3aa3f7846d1904ba69cddb82b569cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _chunkWidth: 64
-  _chunkHeight: 32
-  _cellSize: 0.75
-  _center: {x: 0, y: 0}
-  _gridPlacement: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
 --- !u!4 &1587649894
 Transform:
   m_ObjectHideFlags: 0
@@ -1394,19 +1423,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1587649895
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1587649892}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 32, y: 16, z: 0.1}
-  m_Center: {x: 0, y: 0, z: 0.05}
 --- !u!1 &1698639879
 GameObject:
   m_ObjectHideFlags: 0
@@ -1553,7 +1569,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Miner
+  m_Text: 'Creative
+
+    Output'
 --- !u!222 &1843781419
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1605,6 +1623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af0cdf18234a3984596fdf72216d92b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mainCamera: {fileID: 519420031}
   _gridPlacement: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
   _rotateKey: 114
 --- !u!1 &2143089658
@@ -1692,11 +1711,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 4096f3eb90e2a5543a3560a8fb7fb119, type: 2}
         m_TargetAssemblyTypeName: Assets.Scripts.Grid.GridPlacement, Assembly-CSharp
-        m_MethodName: SelectObject
+        m_MethodName: SetFactory
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 50e7e22873ecf7e42b670a319491952c, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Grid.GridObject, Assembly-CSharp
+          m_ObjectArgument: {fileID: 11400000, guid: 379d66b8f63f6214f951284adb5f5d25, type: 2}
+          m_ObjectArgumentAssemblyTypeName: Assets.Scripts.Factory.Base.FactoryObject,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

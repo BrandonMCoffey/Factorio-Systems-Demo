@@ -1,86 +1,125 @@
+using System;
+using System.Collections.Generic;
+using Assets.Scripts.Factory.Base;
 using UnityEngine;
 
 namespace Assets.Scripts.Grid {
-    public class GridChunk {
-        private float _offsetX;
-        private float _offsetY;
-        private float _cellSize;
+    public class GridChunk : MonoBehaviour {
+        private const int Width = 16;
+        private const int Height = 16;
 
-        private Vector2 _center;
-        private Transform _textGroup;
+        public GridChunk NorthNeighbor = null;
+        public GridChunk EastNeighbor = null;
+        public GridChunk SouthNeighbor = null;
+        public GridChunk WestNeighbor = null;
 
-        private GridElement[,] _grid;
+        private Dictionary<Position, GridObject> _grid = new Dictionary<Position, GridObject>();
+        private List<FactoryObject> _factoryObjects = new List<FactoryObject>();
 
-        public GridChunk(int width, int height, float cellSize = 1, Vector2 center = default, Transform textGroup = null)
+        private BoxCollider _collider;
+
+        private void Start()
         {
-            _cellSize = cellSize;
-            _center = center;
-            _textGroup = textGroup;
-
-            _offsetX = -(width - 1) * cellSize / 2 - cellSize / 2;
-            _offsetY = -(height - 1) * cellSize / 2 - cellSize / 2;
-
-            _grid = new GridElement[width, height];
-
-            for (int w = 0; w < _grid.GetLength(0); w++) {
-                for (int h = 0; h < _grid.GetLength(1); h++) {
-                    float x = _center.x + w * cellSize;
-                    float y = _center.y + h * cellSize;
-                    _grid[w, h] = new GridElement(x, y, textGroup);
-                }
-            }
             DrawGrid();
-            Debug.DrawLine(new Vector3(_center.x + _offsetX, _center.y - _offsetY), new Vector3(_center.x - _offsetX, _center.y - _offsetY), Color.white, 100f);
-            Debug.DrawLine(new Vector3(_center.x - _offsetX, _center.y + _offsetY), new Vector3(_center.x - _offsetX, _center.y - _offsetY), Color.white, 100f);
+            _collider = gameObject.AddComponent<BoxCollider>();
+            _collider.center = new Vector3(8, 8, 0.1f);
+            _collider.size = new Vector3(Width, Height, 0.2f);
         }
 
-        public void SetValue(Vector3 position, GridObject obj, Direction dir, bool overrideObject = false)
+        private void Update()
         {
-            int x = Mathf.FloorToInt(((position - (Vector3) _center).x - _offsetX) / _cellSize);
-            int y = Mathf.FloorToInt(((position - (Vector3) _center).y - _offsetY) / _cellSize);
-            if (_grid[x, y].Obj == null || overrideObject) {
-                _grid[x, y].Obj = obj;
-                _grid[x, y].Dir = dir;
-                DrawGrid();
+            foreach (var factoryObject in _factoryObjects) {
+                factoryObject.OnUpdate(Time.deltaTime);
             }
+        }
+
+        public void PlaceObject(GridPlacement placementData, Vector3 worldPos)
+        {
+            AddObject(WorldToChunkGrid(worldPos.x, worldPos.y), placementData.Direction, placementData.SelectedFactory);
+        }
+
+        private void AddObject(Position pos, Direction dir, FactoryObject factoryObject)
+        {
+            if (_grid.ContainsKey(pos)) return;
+
+            GridObject gridObject = new GameObject("Object(" + pos.X + "," + pos.Y + ")").AddComponent<GridObject>();
+            gridObject.transform.SetParent(transform);
+            gridObject.transform.localPosition = pos.GetLocalPosition();
+
+            gridObject.NorthNeighbor = FindNeighbor(pos, Direction.North);
+            gridObject.EastNeighbor = FindNeighbor(pos, Direction.East);
+            gridObject.SouthNeighbor = FindNeighbor(pos, Direction.South);
+            gridObject.WestNeighbor = FindNeighbor(pos, Direction.West);
+            if (gridObject.NorthNeighbor != null) gridObject.NorthNeighbor.SouthNeighbor = gridObject;
+            if (gridObject.EastNeighbor != null) gridObject.EastNeighbor.WestNeighbor = gridObject;
+            if (gridObject.SouthNeighbor != null) gridObject.SouthNeighbor.NorthNeighbor = gridObject;
+            if (gridObject.WestNeighbor != null) gridObject.WestNeighbor.EastNeighbor = gridObject;
+
+            gridObject.FactoryObject = Instantiate(factoryObject.gameObject, gridObject.transform).GetComponent<FactoryObject>();
+            gridObject.FactoryObject.Setup(gridObject, dir);
+
+            gridObject.Chunk = this;
+            gridObject.ChunkPosition = pos;
+            _grid.Add(pos, gridObject);
+        }
+
+        public GridObject FindNeighbor(Position pos, Direction dir)
+        {
+            switch (dir) {
+                case Direction.North:
+                    pos.Y++;
+                    if (pos.Y >= Height) {
+                        pos.Y = 0;
+                        return NorthNeighbor._grid.ContainsKey(pos) ? NorthNeighbor._grid[pos] : null;
+                    }
+                    break;
+                case Direction.East:
+                    pos.X++;
+                    if (pos.X >= Width) {
+                        pos.X = 0;
+                        return EastNeighbor._grid.ContainsKey(pos) ? EastNeighbor._grid[pos] : null;
+                    }
+                    break;
+                case Direction.South:
+                    pos.Y--;
+                    if (pos.Y < 0) {
+                        pos.Y = Height - 1;
+                        return SouthNeighbor._grid.ContainsKey(pos) ? SouthNeighbor._grid[pos] : null;
+                    }
+                    break;
+                case Direction.West:
+                    pos.X--;
+                    if (pos.X < 0) {
+                        pos.X = Width - 1;
+                        return WestNeighbor._grid.ContainsKey(pos) ? WestNeighbor._grid[pos] : null;
+                    }
+                    break;
+            }
+
+            return _grid.ContainsKey(pos) ? _grid[pos] : null;
         }
 
         public void DrawGrid()
         {
-            for (int i = _textGroup.childCount - 1; i >= 0; i--) {
-                Object.Destroy(_textGroup.GetChild(i).gameObject);
+            int offsetX = Mathf.FloorToInt(transform.position.x);
+            int offsetY = Mathf.FloorToInt(transform.position.y);
+            // Draw Rows
+            Debug.DrawLine(new Vector3(offsetX, offsetY), new Vector3(offsetX + Width, offsetY), Color.yellow, 100f);
+            for (int y = offsetY + 1; y < offsetY + Height; y++) {
+                Debug.DrawLine(new Vector3(offsetX, y), new Vector3(offsetX + Width, y), Color.white, 100f);
             }
-            for (int w = 0; w < _grid.GetLength(0); w++) {
-                for (int h = 0; h < _grid.GetLength(1); h++) {
-                    _grid[w, h].Draw(_cellSize, new Vector2(_offsetX, _offsetY));
-                }
+            Debug.DrawLine(new Vector3(offsetX, offsetY + Height), new Vector3(offsetX + Width, offsetY + Height), Color.yellow, 100f);
+            // Draw Columns
+            Debug.DrawLine(new Vector3(offsetX, offsetY), new Vector3(offsetX, offsetY + Height), Color.yellow, 100f);
+            for (int x = offsetX + 1; x < offsetX + Width; x++) {
+                Debug.DrawLine(new Vector3(x, offsetY), new Vector3(x, offsetY + Height), Color.white, 100f);
             }
-        }
-    }
-
-    internal class GridElement {
-        public float X;
-        public float Y;
-        public GridObject Obj;
-        public Direction Dir;
-        private Transform _parent;
-
-        public GridElement(float x, float y, Transform p)
-        {
-            X = x;
-            Y = y;
-            _parent = p;
+            Debug.DrawLine(new Vector3(offsetX + Width, offsetY), new Vector3(offsetX + Width, offsetY + Height), Color.yellow, 100f);
         }
 
-        public void Draw(float cellSize = 1, Vector2 offset = default)
+        public Position WorldToChunkGrid(float worldX, float worldY)
         {
-            Debug.DrawLine(new Vector3(X + offset.x, Y + offset.y), new Vector3(X + offset.x + cellSize, Y + offset.y), Color.white, 100f);
-            Debug.DrawLine(new Vector3(X + offset.x, Y + offset.y), new Vector3(X + offset.x, Y + offset.y + cellSize), Color.white, 100f);
-            if (Obj != null) {
-                Obj.CreateObject(new Vector3(X + offset.x + cellSize / 2, Y + offset.y + cellSize / 2), "Text_(" + X * cellSize + "," + Y * cellSize + ")", _parent, cellSize / 4);
-                Obj.DebugText(16);
-                Obj.DrawVisual(Dir);
-            }
+            return new Position {X = Mathf.FloorToInt(worldX - transform.position.x), Y = Mathf.FloorToInt(worldY - transform.position.y)};
         }
     }
 }

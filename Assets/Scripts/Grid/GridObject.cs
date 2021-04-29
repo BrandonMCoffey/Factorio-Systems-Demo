@@ -1,48 +1,69 @@
 using System;
+using Assets.Scripts.Factory.Base;
 using UnityEngine;
 
 namespace Assets.Scripts.Grid {
-    [CreateAssetMenu]
-    public class GridObject : ScriptableObject {
-        public string DebugString;
-        public GameObject Visual;
-        public bool Active;
+    [RequireComponent(typeof(BoxCollider))]
+    public class GridObject : MonoBehaviour {
+        public GridObject NorthNeighbor = null;
+        public GridObject EastNeighbor = null;
+        public GridObject SouthNeighbor = null;
+        public GridObject WestNeighbor = null;
 
-        private Transform _transform;
+        public GridChunk Chunk = null;
 
-        public void DrawVisual(Direction dir)
+        public Position ChunkPosition;
+
+        public FactoryObject FactoryObject;
+        public GameObject FactoryVisual;
+
+        private BoxCollider _collider;
+
+        public void Awake()
         {
-            if (Visual == null) return;
-            Transform modelObj = Instantiate(Visual).transform;
-            modelObj.SetParent(_transform);
-            modelObj.localPosition = Vector3.zero;
-            modelObj.eulerAngles = dir switch
+            _collider = GetComponent<BoxCollider>();
+            _collider.center = new Vector3(0.5f, 0.5f);
+            _collider.size = new Vector3(1, 1, 0.1f);
+        }
+
+        public void OnSelect()
+        {
+            if (FactoryObject != null) FactoryObject.OnSelect();
+        }
+    }
+
+    public struct Position {
+        public int X;
+        public int Y;
+
+        public Position(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public Vector3 GetLocalPosition()
+        {
+            return new Vector3(X, Y);
+        }
+
+        public static Quaternion GetRotationFromDirection(Direction dir)
+        {
+            return dir switch
             {
-                Direction.North => new Vector3(0, 0, 0),
-                Direction.East  => new Vector3(0, 0, 270),
-                Direction.South => new Vector3(0, 0, 180),
-                Direction.West  => new Vector3(0, 0, 90),
-                _               => new Vector3(0, 0, 0)
+                Direction.North => Quaternion.Euler(0, 0, 0),
+                Direction.East  => Quaternion.Euler(0, 0, 90),
+                Direction.South => Quaternion.Euler(0, 0, 180),
+                Direction.West  => Quaternion.Euler(0, 0, 270),
+                _               => Quaternion.Euler(0, 0, 0)
             };
         }
+    }
 
-        public void DebugText(int fontSize = 20)
-        {
-            TextMesh textMesh = _transform.GetComponent<TextMesh>();
-            if (textMesh == null) textMesh = _transform.gameObject.AddComponent<TextMesh>();
-            textMesh.anchor = TextAnchor.MiddleCenter;
-            textMesh.alignment = TextAlignment.Center;
-            textMesh.text = DebugString;
-            textMesh.fontSize = fontSize;
-            textMesh.color = Color.white;
-        }
-
-        public void CreateObject(Vector3 position, string objName = "WorldText", Transform parent = null, float scale = 1)
-        {
-            _transform = new GameObject(objName).transform;
-            _transform.SetParent(parent, false);
-            _transform.position = position;
-            _transform.localScale = new Vector3(scale, scale, scale);
-        }
+    public enum Direction {
+        North,
+        East,
+        South,
+        West
     }
 }
