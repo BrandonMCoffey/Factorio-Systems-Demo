@@ -290,7 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextPosition: {fileID: 1909111317334957349}
-  PreviousPosition: {fileID: 0}
+  PreviousPosition: {fileID: 3149817099137601808}
   Item: {fileID: 0}
   DistToNextPosition: 0.25
   MaxOffset: 0.4
@@ -430,7 +430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextPosition: {fileID: 8255005955653920702}
-  PreviousPosition: {fileID: 0}
+  PreviousPosition: {fileID: 1403096344337258742}
   Item: {fileID: 0}
   DistToNextPosition: 0.25
   MaxOffset: 0.4
@@ -532,7 +532,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextPosition: {fileID: 135130720406990273}
-  PreviousPosition: {fileID: 0}
+  PreviousPosition: {fileID: 8366341846518967090}
   Item: {fileID: 0}
   DistToNextPosition: 0.25
   MaxOffset: 0.4
@@ -634,7 +634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextPosition: {fileID: 0}
-  PreviousPosition: {fileID: 0}
+  PreviousPosition: {fileID: 2900851982679122018}
   Item: {fileID: 0}
   DistToNextPosition: 0.25
   MaxOffset: 0.4
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextPosition: {fileID: 2900851982679122018}
-  PreviousPosition: {fileID: 0}
+  PreviousPosition: {fileID: 3658853461242342748}
   Item: {fileID: 0}
   DistToNextPosition: 0.25
   MaxOffset: 0.4
@@ -972,7 +972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextPosition: {fileID: 0}
-  PreviousPosition: {fileID: 0}
+  PreviousPosition: {fileID: 135130720406990273}
   Item: {fileID: 0}
   DistToNextPosition: 0.25
   MaxOffset: 0.4

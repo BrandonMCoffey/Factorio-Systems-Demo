@@ -1,6 +1,5 @@
 using Assets.Scripts.Factory.Base;
 using UnityEngine;
-using UnityEngine.Windows.WebCam;
 
 namespace Assets.Scripts.Factory {
     [RequireComponent(typeof(SpriteRenderer))]
@@ -17,6 +16,7 @@ namespace Assets.Scripts.Factory {
         private Sprite _baseSprite;
 
         private Vector3 _basePosition;
+        private bool _freeze;
 
         private void Awake()
         {
@@ -28,18 +28,19 @@ namespace Assets.Scripts.Factory {
 
         public void Update()
         {
-            if (Item == null || NextPosition == null || NextPosition.Item != null) return;
+            if (_freeze || Item == null || (NextPosition == null && Offset >= MaxOffset)) return;
             Offset += Time.deltaTime * Speed;
-            // Move sprite along towards DistToNextPosition
-            transform.localPosition = _basePosition + new Vector3(0, DistToNextPosition * Offset / MaxOffset, 0);
-            if (Offset > MaxOffset) {
+            if (Offset >= MaxOffset) {
                 Offset = MaxOffset;
-                if (NextPosition != null && NextPosition.Item == null) {
-                    NextPosition.SetItem(Item);
-                    RemoveItem();
+                if (NextPosition != null) {
+                    if (NextPosition.Item == null) {
+                        MoveItem();
+                    } else {
+                        _freeze = true;
+                    }
                 }
             }
-            // Add Optimization : CanMove variable that is updated by Neighbors
+            transform.localPosition = _basePosition - new Vector3(0, DistToNextPosition - DistToNextPosition * Offset / MaxOffset, 0);
         }
 
         public void SetItem(ItemObject item)
@@ -54,11 +55,27 @@ namespace Assets.Scripts.Factory {
             Item = null;
             Offset = 0;
             _spriteRenderer.sprite = _baseSprite;
+            UpdatePreviousItem();
         }
 
         public void GiveItem(ItemObject item)
         {
             if (Item == null) SetItem(item);
+        }
+
+        public void MoveItem()
+        {
+            if (NextPosition == null) return;
+            Offset = MaxOffset;
+            if (NextPosition.Item == null) {
+                NextPosition.SetItem(Item);
+                RemoveItem();
+            }
+        }
+
+        private void UpdatePreviousItem()
+        {
+            if (PreviousPosition != null) PreviousPosition._freeze = false;
         }
     }
 }

@@ -16,7 +16,9 @@ namespace Assets.Scripts.Factory {
                 if (frontBelt != null && Dir == frontBelt.Dir) {
                     Debug.Log("Added front neighboring belt");
                     LeftItems[0].NextPosition = frontBelt.LeftItems[3];
+                    frontBelt.LeftItems[3].PreviousPosition = LeftItems[0];
                     RightItems[0].NextPosition = frontBelt.RightItems[3];
+                    frontBelt.RightItems[3].PreviousPosition = RightItems[0];
                 }
             }
             if (Neighbors.GetBack() != null) {
@@ -24,7 +26,9 @@ namespace Assets.Scripts.Factory {
                 if (backBelt != null && Dir == backBelt.Dir) {
                     Debug.Log("Added back neighboring belt");
                     backBelt.LeftItems[0].NextPosition = LeftItems[3];
+                    LeftItems[3].PreviousPosition = backBelt.LeftItems[0];
                     backBelt.RightItems[0].NextPosition = RightItems[3];
+                    RightItems[3].PreviousPosition = backBelt.RightItems[0];
                 }
             }
         }
