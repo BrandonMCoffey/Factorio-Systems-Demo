@@ -33,9 +33,21 @@ namespace Assets.Scripts.Grid {
             }
         }
 
+        public void PreviewPlacement(GridPlacement placementData, Vector3 worldPos)
+        {
+            if (placementData.PreviewPlacement) placementData.CreateNewPreview();
+            placementData.PreviewPlacement.transform.position = transform.position + WorldToChunkGrid(worldPos.x, worldPos.y).GetLocalPosition() + new Vector3(0.5f, 0.5f);
+            placementData.EnablePreview();
+        }
+
         public void PlaceObject(GridPlacement placementData, Vector3 worldPos)
         {
             AddObject(WorldToChunkGrid(worldPos.x, worldPos.y), placementData.Direction, placementData.SelectedFactory);
+        }
+
+        public void RemoveObject(Position pos)
+        {
+            _grid.Remove(pos);
         }
 
         private void AddObject(Position pos, Direction dir, FactoryObject factoryObject)

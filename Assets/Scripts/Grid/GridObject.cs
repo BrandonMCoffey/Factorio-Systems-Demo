@@ -30,6 +30,17 @@ namespace Assets.Scripts.Grid {
         {
             if (FactoryObject != null) FactoryObject.OnSelect();
         }
+
+        public void OnBreak()
+        {
+            FactoryObject.OnBreak();
+            if (NorthNeighbor != null) NorthNeighbor.SouthNeighbor = null;
+            if (EastNeighbor != null) EastNeighbor.WestNeighbor = null;
+            if (SouthNeighbor != null) SouthNeighbor.NorthNeighbor = null;
+            if (WestNeighbor != null) WestNeighbor.EastNeighbor = null;
+            Chunk.RemoveObject(ChunkPosition);
+            Destroy(gameObject);
+        }
     }
 
     public struct Position {
@@ -52,18 +63,18 @@ namespace Assets.Scripts.Grid {
             return dir switch
             {
                 Direction.North => Quaternion.Euler(0, 0, 0),
-                Direction.East  => Quaternion.Euler(0, 0, 90),
-                Direction.South => Quaternion.Euler(0, 0, 180),
-                Direction.West  => Quaternion.Euler(0, 0, 270),
+                Direction.East  => Quaternion.Euler(0, 0, -90),
+                Direction.South => Quaternion.Euler(0, 0, -180),
+                Direction.West  => Quaternion.Euler(0, 0, -270),
                 _               => Quaternion.Euler(0, 0, 0)
             };
         }
     }
 
     public enum Direction {
-        North,
-        East,
-        South,
-        West
+        North = 0,
+        East = 1,
+        South = 2,
+        West = 3
     }
 }

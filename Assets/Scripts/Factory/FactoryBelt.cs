@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Assets.Scripts.Factory.Base;
 using Assets.Scripts.Grid;
@@ -5,44 +6,63 @@ using UnityEngine;
 
 namespace Assets.Scripts.Factory {
     public class FactoryBelt : FactoryObject {
-        public FactoryBeltItem[] LeftItems = new FactoryBeltItem[4];
-        public FactoryBeltItem[] RightItems = new FactoryBeltItem[4];
+        [Header("Settings (Assume Belt Rotated to North)")]
+        public Direction OutputDirection = Direction.North;
+        public FactoryBeltItem LeftOutputSlot = null;
+        public FactoryBeltItem RightOutputSlot = null;
+        public Direction InputDirection = Direction.South;
+        public FactoryBeltItem LeftInputSlot = null;
+        public FactoryBeltItem RightInputSlot = null;
 
         public override void Setup(GridObject gridObject, Direction dir)
         {
             base.Setup(gridObject, dir);
-            if (Neighbors.GetFront() != null) {
-                FactoryBelt frontBelt = Neighbors.GetFront().GetComponent<FactoryBelt>();
-                if (frontBelt != null && Dir == frontBelt.Dir) {
-                    Debug.Log("Added front neighboring belt");
-                    LeftItems[0].NextPosition = frontBelt.LeftItems[3];
-                    frontBelt.LeftItems[3].PreviousPosition = LeftItems[0];
-                    RightItems[0].NextPosition = frontBelt.RightItems[3];
-                    frontBelt.RightItems[3].PreviousPosition = RightItems[0];
-                }
+            FactoryBelt frontBelt = Neighbors.GetSide(OutputDirection)?.GetComponent<FactoryBelt>();
+            if (frontBelt != null && MatchesIO(frontBelt.InputDirection, frontBelt.Dir, OutputDirection)) {
+                LeftOutputSlot.NextPosition = frontBelt.LeftInputSlot;
+                frontBelt.LeftInputSlot.PreviousPosition = LeftOutputSlot;
+                RightOutputSlot.NextPosition = frontBelt.RightInputSlot;
+                frontBelt.RightInputSlot.PreviousPosition = RightOutputSlot;
             }
-            if (Neighbors.GetBack() != null) {
-                FactoryBelt backBelt = Neighbors.GetBack().GetComponent<FactoryBelt>();
-                if (backBelt != null && Dir == backBelt.Dir) {
-                    Debug.Log("Added back neighboring belt");
-                    backBelt.LeftItems[0].NextPosition = LeftItems[3];
-                    LeftItems[3].PreviousPosition = backBelt.LeftItems[0];
-                    backBelt.RightItems[0].NextPosition = RightItems[3];
-                    RightItems[3].PreviousPosition = backBelt.RightItems[0];
-                }
+            FactoryBelt backBelt = Neighbors.GetSide(InputDirection)?.GetComponent<FactoryBelt>();
+            if (backBelt != null && MatchesIO(backBelt.OutputDirection, backBelt.Dir, InputDirection)) {
+                backBelt.LeftOutputSlot.NextPosition = LeftInputSlot;
+                LeftInputSlot.PreviousPosition = backBelt.LeftOutputSlot;
+                backBelt.RightOutputSlot.NextPosition = RightInputSlot;
+                RightInputSlot.PreviousPosition = backBelt.RightOutputSlot;
+            }
+            FactoryCreativeOutput creativeOutput = Neighbors.GetSide(InputDirection)?.GetComponent<FactoryCreativeOutput>();
+            if (creativeOutput != null) {
+                creativeOutput.AddBelt(this);
             }
         }
 
-        public override void OnUpdate(float deltaTime)
+        public override void OnBreak()
         {
-            /*
-            foreach (var item in LeftItems) {
-                item.OnUpdate(deltaTime);
-            }
-            foreach (var item in RightItems) {
-                item.OnUpdate(deltaTime);
-            }
-            */
+            LeftInputSlot.OnBreakInput();
+            RightInputSlot.OnBreakInput();
+            LeftOutputSlot.OnBreakOutput();
+            RightOutputSlot.OnBreakOutput();
+            base.OnBreak();
+        }
+
+        public bool MatchesIO(Direction dir, Direction rot, Direction IO)
+        {
+            int num = (DirectionToInt(dir) + DirectionToInt(rot)) % 4;
+            int io = (DirectionToInt(Dir) + DirectionToInt(IO) + 2) % 4;
+            return num == io;
+        }
+
+        public int DirectionToInt(Direction dir)
+        {
+            return dir switch
+            {
+                Direction.North => 0,
+                Direction.East  => 1,
+                Direction.South => 2,
+                Direction.West  => 3,
+                _               => 0
+            };
         }
     }
 }

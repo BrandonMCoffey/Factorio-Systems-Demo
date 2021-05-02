@@ -7,7 +7,7 @@ namespace Assets.Scripts.Factory {
         public FactoryBeltItem NextPosition = null;
         public FactoryBeltItem PreviousPosition = null;
         public ItemObject Item;
-        public float DistToNextPosition = 0.25f;
+        public Vector3 PathForAnimation = new Vector3(0, 0.25f);
         public float MaxOffset = 0.4f;
         public float Offset;
         public float Speed = 0.5f;
@@ -26,6 +26,11 @@ namespace Assets.Scripts.Factory {
             _basePosition = transform.localPosition;
         }
 
+        private void Start()
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
         public void Update()
         {
             if (_freeze || Item == null || (NextPosition == null && Offset >= MaxOffset)) return;
@@ -40,7 +45,7 @@ namespace Assets.Scripts.Factory {
                     }
                 }
             }
-            transform.localPosition = _basePosition - new Vector3(0, DistToNextPosition - DistToNextPosition * Offset / MaxOffset, 0);
+            transform.localPosition = _basePosition - PathForAnimation + PathForAnimation * Offset / MaxOffset;
         }
 
         public void SetItem(ItemObject item)
@@ -76,6 +81,19 @@ namespace Assets.Scripts.Factory {
         private void UpdatePreviousItem()
         {
             if (PreviousPosition != null) PreviousPosition._freeze = false;
+        }
+
+        public void OnBreakInput()
+        {
+            if (PreviousPosition != null) {
+                PreviousPosition.NextPosition = null;
+                PreviousPosition._freeze = false;
+            }
+        }
+
+        public void OnBreakOutput()
+        {
+            if (NextPosition != null) NextPosition.PreviousPosition = null;
         }
     }
 }

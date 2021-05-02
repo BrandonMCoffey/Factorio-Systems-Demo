@@ -15,3 +15,5 @@ MonoBehaviour:
   SelectedFactory: {fileID: 7259593811706561338, guid: 4d9f12326a9b91143a7c1c942d40557c, type: 3}
   Direction: 0
   Active: 1
+  PreviewPlacement: {fileID: 0}
+  PreviewMaterial: {fileID: 2100000, guid: c571cdac0df12954d904874b53961a19, type: 2}
