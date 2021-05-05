@@ -15,6 +15,7 @@ namespace Assets.Scripts.Grid {
         {
             SelectedFactory = factoryObject;
             Active = true;
+            if (PreviewPlacement != null) PreviewPlacement.SetActive(true);
         }
 
         public void SetDirection(Direction dir)
@@ -27,12 +28,19 @@ namespace Assets.Scripts.Grid {
         {
             SelectedFactory = null;
             Active = false;
+            if (PreviewPlacement != null) PreviewPlacement.SetActive(false);
         }
 
         public void CreateNewPreview()
         {
             if (PreviewPlacement != null) Destroy(PreviewPlacement);
-            PreviewPlacement = Instantiate(SelectedFactory.Art);
+            if (SelectedFactory.PreviewRenderer != null) {
+                PreviewPlacement = Instantiate(SelectedFactory.PreviewRenderer.gameObject);
+                PreviewPlacement.GetComponent<SpriteRenderer>().sprite = SelectedFactory.PreviewSprite;
+            } else {
+                GameObject obj = SelectedFactory.transform.Find("Art").gameObject;
+                PreviewPlacement = Instantiate(obj != null ? obj : SelectedFactory.gameObject);
+            }
             PreviewPlacement.gameObject.name = "PreviewFactoryPlacement";
             PreviewPlacement.transform.rotation = Position.GetRotationFromDirection(Direction);
             foreach (Transform obj in PreviewPlacement.transform) {

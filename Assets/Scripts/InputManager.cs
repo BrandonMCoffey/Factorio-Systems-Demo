@@ -19,7 +19,7 @@ namespace Assets.Scripts {
         private void Update()
         {
             if (_gridPlacement == null || !_gridPlacement.Active) return;
-            if (_previewPlacement) PreviewPlacement();
+            if (_previewPlacement && _gridPlacement.Active) PreviewPlacement();
             if (Input.GetMouseButtonDown(0)) LeftClickRaycast();
             if (Input.GetMouseButtonDown(1)) RightClickRaycast();
             if (Input.GetKeyDown(_rotateKey)) Rotate();

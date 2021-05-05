@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace Assets.Scripts.Factory.Base {
     public class FactoryObject : MonoBehaviour {
-        public GameObject Art;
+        public Sprite PreviewSprite;
+        public SpriteRenderer PreviewRenderer = null;
         public Direction Dir;
         internal FactoryNeighbors Neighbors;
 

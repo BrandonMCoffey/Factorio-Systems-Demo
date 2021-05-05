@@ -31,7 +31,7 @@ namespace Assets.Scripts.Factory {
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
-        public void Update()
+        private void Update()
         {
             if (_freeze || Item == null || (NextPosition == null && Offset >= MaxOffset)) return;
             Offset += Time.deltaTime * Speed;

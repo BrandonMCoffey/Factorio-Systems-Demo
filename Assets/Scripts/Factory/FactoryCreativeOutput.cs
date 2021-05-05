@@ -47,7 +47,7 @@ namespace Assets.Scripts.Factory {
             _outputBelts.Add(belt);
         }
 
-        public void Update()
+        private void Update()
         {
             if (Item == null || Item.Item == null) return;
             foreach (var belt in _outputBelts) {

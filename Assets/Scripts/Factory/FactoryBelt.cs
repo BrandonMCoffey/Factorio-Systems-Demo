@@ -19,17 +19,27 @@ namespace Assets.Scripts.Factory {
             base.Setup(gridObject, dir);
             FactoryBelt frontBelt = Neighbors.GetSide(OutputDirection)?.GetComponent<FactoryBelt>();
             if (frontBelt != null && MatchesIO(frontBelt.InputDirection, frontBelt.Dir, OutputDirection)) {
-                LeftOutputSlot.NextPosition = frontBelt.LeftInputSlot;
-                frontBelt.LeftInputSlot.PreviousPosition = LeftOutputSlot;
-                RightOutputSlot.NextPosition = frontBelt.RightInputSlot;
-                frontBelt.RightInputSlot.PreviousPosition = RightOutputSlot;
+                //Fix weird cases
+                if (Vector3.Distance(frontBelt.LeftOutputSlot.transform.position, LeftInputSlot.transform.position) < 1) {
+                    LeftOutputSlot.NextPosition = frontBelt.LeftInputSlot;
+                    frontBelt.LeftInputSlot.PreviousPosition = LeftOutputSlot;
+                }
+                if (Vector3.Distance(frontBelt.RightOutputSlot.transform.position, RightInputSlot.transform.position) < 1) {
+                    RightOutputSlot.NextPosition = frontBelt.RightInputSlot;
+                    frontBelt.RightInputSlot.PreviousPosition = RightOutputSlot;
+                }
             }
             FactoryBelt backBelt = Neighbors.GetSide(InputDirection)?.GetComponent<FactoryBelt>();
             if (backBelt != null && MatchesIO(backBelt.OutputDirection, backBelt.Dir, InputDirection)) {
-                backBelt.LeftOutputSlot.NextPosition = LeftInputSlot;
-                LeftInputSlot.PreviousPosition = backBelt.LeftOutputSlot;
-                backBelt.RightOutputSlot.NextPosition = RightInputSlot;
-                RightInputSlot.PreviousPosition = backBelt.RightOutputSlot;
+                //Fix weird cases
+                if (Vector3.Distance(backBelt.LeftOutputSlot.transform.position, LeftInputSlot.transform.position) < 1) {
+                    backBelt.LeftOutputSlot.NextPosition = LeftInputSlot;
+                    LeftInputSlot.PreviousPosition = backBelt.LeftOutputSlot;
+                }
+                if (Vector3.Distance(backBelt.RightOutputSlot.transform.position, RightInputSlot.transform.position) < 1) {
+                    backBelt.RightOutputSlot.NextPosition = RightInputSlot;
+                    RightInputSlot.PreviousPosition = backBelt.RightOutputSlot;
+                }
             }
             FactoryCreativeOutput creativeOutput = Neighbors.GetSide(InputDirection)?.GetComponent<FactoryCreativeOutput>();
             if (creativeOutput != null) {

@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b968260bc2c78a41856cf28484bfb78, type: 3}
-  m_Name: Bleh
+  m_Name: Gear
   m_EditorClassIdentifier: 
-  Sprite: {fileID: 8568936227846228059, guid: 22f4bafefe9419f4588816a09db37c2f, type: 3}
+  Sprite: {fileID: 21300000, guid: a4f6a2bae87535c4c90fbdc004615239, type: 3}
