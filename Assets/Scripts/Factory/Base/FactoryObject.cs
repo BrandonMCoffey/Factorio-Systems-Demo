@@ -1,4 +1,3 @@
-using System;
 using Assets.Scripts.Grid;
 using UnityEngine;
 
@@ -17,13 +16,8 @@ namespace Assets.Scripts.Factory.Base {
             Dir = dir;
         }
 
-        public virtual void OnUpdate(float deltaTime)
+        public virtual void OnSelect()
         {
-        }
-
-        public void OnSelect()
-        {
-            Debug.Log("Selected");
         }
 
         public virtual void OnBreak()
@@ -112,10 +106,10 @@ namespace Assets.Scripts.Factory.Base {
         {
             return _facing switch
             {
-                Direction.North => _east,
-                Direction.East  => _south,
-                Direction.South => _west,
-                Direction.West  => _north,
+                Direction.North => _west,
+                Direction.East  => _north,
+                Direction.South => _east,
+                Direction.West  => _south,
                 _               => null
             };
         }

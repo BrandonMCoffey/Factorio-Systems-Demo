@@ -54,6 +54,11 @@ MonoBehaviour:
   InputDirection: 2
   LeftInputSlot: {fileID: 3658853461242342748}
   RightInputSlot: {fileID: 8366341846518967090}
+  OtherSlots:
+  - {fileID: 2900851982679122018}
+  - {fileID: 3149817099137601808}
+  - {fileID: 135130720406990273}
+  - {fileID: 1403096344337258742}
 --- !u!1 &2062114562129053845
 GameObject:
   m_ObjectHideFlags: 0

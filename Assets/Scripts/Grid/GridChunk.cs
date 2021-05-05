@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Assets.Scripts.Factory.Base;
 using UnityEngine;
@@ -24,13 +23,6 @@ namespace Assets.Scripts.Grid {
             _collider = gameObject.AddComponent<BoxCollider>();
             _collider.center = new Vector3(8, 8, 0.1f);
             _collider.size = new Vector3(Width, Height, 0.2f);
-        }
-
-        private void Update()
-        {
-            foreach (var factoryObject in _factoryObjects) {
-                factoryObject.OnUpdate(Time.deltaTime);
-            }
         }
 
         public void PreviewPlacement(GridPlacement placementData, Vector3 worldPos)

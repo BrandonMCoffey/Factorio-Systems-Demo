@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Factory.Base;
+using Assets.Scripts.Factory.UI;
 using Assets.Scripts.Grid;
-using UnityEngine;
 
 namespace Assets.Scripts.Factory {
     public class FactoryCreativeOutput : FactoryObject {
@@ -42,11 +42,6 @@ namespace Assets.Scripts.Factory {
             }
         }
 
-        public void AddBelt(FactoryBelt belt)
-        {
-            _outputBelts.Add(belt);
-        }
-
         private void Update()
         {
             if (Item == null || Item.Item == null) return;
@@ -54,6 +49,21 @@ namespace Assets.Scripts.Factory {
                 belt.LeftInputSlot.GiveItem(Item.Item);
                 belt.RightInputSlot.GiveItem(Item.Item);
             }
+        }
+
+        public override void OnSelect()
+        {
+            FactoryUIController.Instance.SetFactoryObject(this);
+        }
+
+        public void SetItem(ItemObject item)
+        {
+            Item.SetItem(item);
+        }
+
+        public void AddBelt(FactoryBelt belt)
+        {
+            _outputBelts.Add(belt);
         }
     }
 }

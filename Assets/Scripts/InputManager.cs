@@ -1,4 +1,4 @@
-using System;
+using Assets.Scripts.Factory.UI;
 using Assets.Scripts.Grid;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,6 +8,7 @@ namespace Assets.Scripts {
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private GridPlacement _gridPlacement = null;
         [SerializeField] private KeyCode _rotateKey = KeyCode.R;
+        [SerializeField] private KeyCode _closeMenuKey = KeyCode.Escape;
         [SerializeField] private bool _previewPlacement = true;
 
         private void Start()
@@ -19,15 +20,18 @@ namespace Assets.Scripts {
         private void Update()
         {
             if (_gridPlacement == null || !_gridPlacement.Active) return;
-            if (_previewPlacement && _gridPlacement.Active) PreviewPlacement();
-            if (Input.GetMouseButtonDown(0)) LeftClickRaycast();
-            if (Input.GetMouseButtonDown(1)) RightClickRaycast();
+            bool mouseAvailable = !IsMouseOverUI();
+            if (_previewPlacement && _gridPlacement.Active) PreviewPlacement(mouseAvailable);
+            if (Input.GetMouseButtonDown(0) && mouseAvailable) LeftClickRaycast();
+            if (Input.GetMouseButtonDown(1) && mouseAvailable) RightClickRaycast();
             if (Input.GetKeyDown(_rotateKey)) Rotate();
+            if (Input.GetKeyDown(_closeMenuKey)) {
+                FactoryUIController.Instance.CloseMenu();
+            }
         }
 
         private void LeftClickRaycast()
         {
-            if (IsMouseOverUI()) return;
             Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
             Physics.Raycast(ray, out var hit, 100f);
             if (hit.collider == null) return;
@@ -44,7 +48,6 @@ namespace Assets.Scripts {
 
         private void RightClickRaycast()
         {
-            if (IsMouseOverUI()) return;
             Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
             Physics.Raycast(ray, out var hit, 100f);
             if (hit.collider == null) return;
@@ -55,8 +58,12 @@ namespace Assets.Scripts {
             }
         }
 
-        private void PreviewPlacement()
+        private void PreviewPlacement(bool active = false)
         {
+            if (!active) {
+                _gridPlacement.DisablePreview();
+                return;
+            }
             Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
             Physics.Raycast(ray, out var hit, 100f);
             if (hit.collider == null) return;

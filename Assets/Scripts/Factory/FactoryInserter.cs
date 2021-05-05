@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Factory.Base;
 using Assets.Scripts.Grid;
 using UnityEngine;
@@ -7,14 +7,14 @@ using UnityEngine;
 namespace Assets.Scripts.Factory {
     public class FactoryInserter : FactoryObject {
         public FactoryItem HeldItem = null;
-        [SerializeField] private float _movementSpeed = 1;
+        public FactoryItem DesiredItem = null;
+        [SerializeField] private float _movementSpeed = 0.4f;
 
         public Direction OutputDirection = Direction.North;
         private InserterConnection _output;
         public Direction InputDirection = Direction.South;
         private InserterConnection _input;
 
-        private Transform _desiredPosition;
         private Vector3 _basePosition;
 
         private InserterOperation _operation = InserterOperation.WaitingForItem;
@@ -26,8 +26,6 @@ namespace Assets.Scripts.Factory {
             if (outputNeighbor != null) {
                 FactoryBelt belt = outputNeighbor.GetComponent<FactoryBelt>();
                 if (belt != null) _output = new BeltConnection(belt);
-                FactoryCreativeOutput creativeOutput = outputNeighbor.GetComponent<FactoryCreativeOutput>();
-                if (creativeOutput != null) _output = new CreativeOutputConnection(creativeOutput);
                 //FactoryAssembler assembler = outputNeighbor.GetComponent<FactoryAssembler>();
                 //if (assembler != null) _output = new AssemblerConnection(assembler);
             }
@@ -42,39 +40,57 @@ namespace Assets.Scripts.Factory {
             }
         }
 
-        private void Awake()
+        private void Start()
         {
-            _basePosition = transform.position;
+            _basePosition = HeldItem.transform.position;
         }
 
         private void Update()
         {
-            if (_input == null || _output == null) return;
+            if (_input == null || _output == null || HeldItem == null) return;
+            if (DesiredItem != null) Debug.Log(_operation + " to " + DesiredItem.gameObject + " at " + DesiredItem.transform.position);
+            else Debug.Log(_operation);
             switch (_operation) {
                 case InserterOperation.WaitingForItem:
                     if (_input.TestForAvailableItems() && _output.TestForAvailableSlot()) {
                         _operation = InserterOperation.ReachingForItem;
-                        _desiredPosition = _input.GetTransform();
+                        DesiredItem = _input.GetDesiredItem(HeldItem.transform.position);
                     }
                     break;
                 case InserterOperation.ReachingForItem:
-                    if (!_input.TestForAvailableItems()) {
+                    if (!_input.TestForAvailableItems() || DesiredItem == null) {
                         _operation = InserterOperation.Returning;
                         break;
                     }
-                    transform.position = Vector3.Lerp(transform.position, _desiredPosition.position, _movementSpeed);
-                    float dist = Vector3.Distance(_desiredPosition.position, transform.position);
-                    if (dist < 0.1f) {
+                    HeldItem.transform.position = Vector3.MoveTowards(HeldItem.transform.position, DesiredItem.transform.position, _movementSpeed * Time.deltaTime);
+                    float distIn = Vector3.Distance(DesiredItem.transform.position, HeldItem.transform.position);
+                    if (distIn < 0.1f) {
+                        DesiredItem = _output.GetDesiredItem(HeldItem.transform.position);
+                        HeldItem.SetItem(DesiredItem.Item);
+                        DesiredItem.RemoveItem();
                         _operation = InserterOperation.MovingItem;
-                        _desiredPosition = _output.GetTransform();
-                    } else if (dist > 1f) {
+                    } else if (distIn > 2f) {
                         _operation = InserterOperation.Returning;
                     }
                     break;
                 case InserterOperation.MovingItem:
+                    if (DesiredItem == null || DesiredItem.Item != null) {
+                        _operation = InserterOperation.Returning;
+                        break;
+                    }
+                    HeldItem.transform.position = Vector3.MoveTowards(HeldItem.transform.position, DesiredItem.transform.position, _movementSpeed * Time.deltaTime);
+                    float distOut = Vector3.Distance(DesiredItem.transform.position, HeldItem.transform.position);
+                    if (distOut < 0.1f) {
+                        DesiredItem = _output.GetDesiredItem(HeldItem.transform.position);
+                        DesiredItem.SetItem(HeldItem.Item);
+                        HeldItem.RemoveItem();
+                        _operation = InserterOperation.Returning;
+                    } else if (distOut > 3f) {
+                        _operation = InserterOperation.Returning;
+                    }
                     break;
                 case InserterOperation.Returning:
-                    transform.position = Vector3.Lerp(transform.position, _basePosition, _movementSpeed);
+                    HeldItem.transform.position = Vector3.MoveTowards(HeldItem.transform.position, _basePosition, _movementSpeed * Time.deltaTime);
                     break;
             }
         }
@@ -82,7 +98,7 @@ namespace Assets.Scripts.Factory {
 
     internal abstract class InserterConnection {
         public abstract bool TestForAvailableItems();
-        public abstract Transform GetTransform();
+        public abstract FactoryItem GetDesiredItem(Vector3 pos);
         public abstract bool TestForAvailableSlot();
     }
 
@@ -91,22 +107,35 @@ namespace Assets.Scripts.Factory {
 
         public BeltConnection(FactoryBelt belt)
         {
-            _beltItems = new List<FactoryBeltItem>();
+            _beltItems = new List<FactoryBeltItem>(); // {belt.LeftInputSlot, belt.LeftOutputSlot, belt.RightInputSlot, belt.RightOutputSlot};
+            foreach (var slot in belt.OtherSlots) {
+                _beltItems.Add(slot);
+            }
         }
 
         public override bool TestForAvailableItems()
         {
-            return false;
+            return _beltItems.Any(item => item.Item != null);
         }
 
-        public override Transform GetTransform()
+        public override FactoryItem GetDesiredItem(Vector3 pos)
         {
-            return null;
+            int closest = -1;
+            float closestDist = 0;
+            for (int i = 0; i < _beltItems.Count; i++) {
+                float dist = Vector3.Distance(_beltItems[i].transform.position, pos);
+                if (dist > closestDist) {
+                    closest = i;
+                    closestDist = dist;
+                }
+            }
+            if (closest == -1 || _beltItems[closest] == null) return null;
+            return _beltItems[closest];
         }
 
         public override bool TestForAvailableSlot()
         {
-            return false;
+            return _beltItems.Any(item => item.Item == null);
         }
     }
 
@@ -123,9 +152,9 @@ namespace Assets.Scripts.Factory {
             return true;
         }
 
-        public override Transform GetTransform()
+        public override FactoryItem GetDesiredItem(Vector3 pos)
         {
-            return _item != null ? _item.transform : null;
+            return _item != null ? _item : null;
         }
 
         public override bool TestForAvailableSlot()

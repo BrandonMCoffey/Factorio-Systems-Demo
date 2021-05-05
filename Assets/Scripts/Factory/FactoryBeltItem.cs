@@ -2,27 +2,22 @@ using Assets.Scripts.Factory.Base;
 using UnityEngine;
 
 namespace Assets.Scripts.Factory {
-    [RequireComponent(typeof(SpriteRenderer))]
-    public class FactoryBeltItem : MonoBehaviour {
-        public FactoryBeltItem NextPosition = null;
-        public FactoryBeltItem PreviousPosition = null;
-        public ItemObject Item;
+    public class FactoryBeltItem : FactoryItem {
+        public FactoryBeltItem NextPosition;
+        public FactoryBeltItem PreviousPosition;
         public Vector3 PathForAnimation = new Vector3(0, 0.25f);
         public float MaxOffset = 0.4f;
         public float Offset;
         public float Speed = 0.5f;
-
-        private SpriteRenderer _spriteRenderer;
-        private Sprite _baseSprite;
 
         private Vector3 _basePosition;
         private bool _freeze;
 
         private void Awake()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-            _baseSprite = _spriteRenderer.sprite;
-            if (Item != null) _spriteRenderer.sprite = Item.Sprite;
+            SpriteRenderer = GetComponent<SpriteRenderer>();
+            BaseSprite = SpriteRenderer.sprite;
+            if (Item != null) SpriteRenderer.sprite = Item.Sprite;
             _basePosition = transform.localPosition;
         }
 
@@ -48,18 +43,16 @@ namespace Assets.Scripts.Factory {
             transform.localPosition = _basePosition - PathForAnimation + PathForAnimation * Offset / MaxOffset;
         }
 
-        public void SetItem(ItemObject item)
+        public override void SetItem(ItemObject item)
         {
-            Item = item;
+            base.SetItem(item);
             Offset = 0;
-            _spriteRenderer.sprite = Item.Sprite;
         }
 
-        public void RemoveItem()
+        public override void RemoveItem()
         {
-            Item = null;
+            base.RemoveItem();
             Offset = 0;
-            _spriteRenderer.sprite = _baseSprite;
             UpdatePreviousItem();
         }
 

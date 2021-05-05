@@ -6,26 +6,32 @@ namespace Assets.Scripts.Factory {
     public class FactoryItem : MonoBehaviour {
         public ItemObject Item;
 
-        private SpriteRenderer _spriteRenderer;
-        private Sprite _baseSprite;
+        internal SpriteRenderer SpriteRenderer;
+        internal Sprite BaseSprite;
 
         private void Awake()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-            _baseSprite = _spriteRenderer.sprite;
-            if (Item != null) _spriteRenderer.sprite = Item.Sprite;
+            SpriteRenderer = GetComponent<SpriteRenderer>();
+            BaseSprite = SpriteRenderer.sprite;
+            if (Item != null) SpriteRenderer.sprite = Item.Sprite;
         }
 
-        public void SetItem(ItemObject item)
+        private void Start()
         {
-            Item = item;
-            _spriteRenderer.sprite = Item.Sprite;
+            transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
-        public void RemoveItem()
+        public virtual void SetItem(ItemObject item)
+        {
+            if (item == null) return;
+            Item = item;
+            SpriteRenderer.sprite = item.Sprite;
+        }
+
+        public virtual void RemoveItem()
         {
             Item = null;
-            _spriteRenderer.sprite = _baseSprite;
+            SpriteRenderer.sprite = BaseSprite;
         }
     }
 }

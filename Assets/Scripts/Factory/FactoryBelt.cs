@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Assets.Scripts.Factory.Base;
 using Assets.Scripts.Grid;
@@ -13,6 +12,7 @@ namespace Assets.Scripts.Factory {
         public Direction InputDirection = Direction.South;
         public FactoryBeltItem LeftInputSlot = null;
         public FactoryBeltItem RightInputSlot = null;
+        public List<FactoryBeltItem> OtherSlots = new List<FactoryBeltItem>();
 
         public override void Setup(GridObject gridObject, Direction dir)
         {
@@ -20,11 +20,11 @@ namespace Assets.Scripts.Factory {
             FactoryBelt frontBelt = Neighbors.GetSide(OutputDirection)?.GetComponent<FactoryBelt>();
             if (frontBelt != null && MatchesIO(frontBelt.InputDirection, frontBelt.Dir, OutputDirection)) {
                 //Fix weird cases
-                if (Vector3.Distance(frontBelt.LeftOutputSlot.transform.position, LeftInputSlot.transform.position) < 1) {
+                if (Vector3.Distance(LeftOutputSlot.transform.position, frontBelt.LeftInputSlot.transform.position) < 1) {
                     LeftOutputSlot.NextPosition = frontBelt.LeftInputSlot;
                     frontBelt.LeftInputSlot.PreviousPosition = LeftOutputSlot;
                 }
-                if (Vector3.Distance(frontBelt.RightOutputSlot.transform.position, RightInputSlot.transform.position) < 1) {
+                if (Vector3.Distance(RightOutputSlot.transform.position, frontBelt.RightInputSlot.transform.position) < 1) {
                     RightOutputSlot.NextPosition = frontBelt.RightInputSlot;
                     frontBelt.RightInputSlot.PreviousPosition = RightOutputSlot;
                 }
