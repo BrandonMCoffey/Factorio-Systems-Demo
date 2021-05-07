@@ -15,7 +15,8 @@ namespace Assets.Scripts.Grid {
         {
             SelectedFactory = factoryObject;
             Active = true;
-            if (PreviewPlacement != null) PreviewPlacement.SetActive(true);
+            if (PreviewPlacement == null) CreateNewPreview();
+            PreviewPlacement.SetActive(true);
         }
 
         public void SetDirection(Direction dir)
@@ -34,6 +35,7 @@ namespace Assets.Scripts.Grid {
         public void CreateNewPreview()
         {
             if (PreviewPlacement != null) Destroy(PreviewPlacement);
+            if (SelectedFactory == null) return;
             if (SelectedFactory.PreviewRenderer != null) {
                 PreviewPlacement = Instantiate(SelectedFactory.PreviewRenderer.gameObject);
                 PreviewPlacement.GetComponent<SpriteRenderer>().sprite = SelectedFactory.PreviewSprite;

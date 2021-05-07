@@ -1,3 +1,4 @@
+using Assets.Scripts.Audio;
 using Assets.Scripts.Factory.UI;
 using Assets.Scripts.Grid;
 using UnityEngine;
@@ -25,9 +26,7 @@ namespace Assets.Scripts {
             if (Input.GetMouseButtonDown(0) && mouseAvailable) LeftClickRaycast();
             if (Input.GetMouseButtonDown(1) && mouseAvailable) RightClickRaycast();
             if (Input.GetKeyDown(_rotateKey)) Rotate();
-            if (Input.GetKeyDown(_closeMenuKey)) {
-                FactoryUIController.Instance.CloseMenu();
-            }
+            if (Input.GetKeyDown(_closeMenuKey)) FactoryUIController.Instance.CloseMenu();
         }
 
         private void LeftClickRaycast()
@@ -39,6 +38,7 @@ namespace Assets.Scripts {
             GridChunk gridChunk = hit.collider.GetComponent<GridChunk>();
             if (gridChunk != null) {
                 gridChunk.PlaceObject(_gridPlacement, hit.point);
+                AudioManager.Instance.PlayBuildSound();
             }
             GridObject gridObject = hit.collider.GetComponent<GridObject>();
             if (gridObject != null) {
@@ -55,6 +55,7 @@ namespace Assets.Scripts {
             GridObject gridObject = hit.collider.GetComponent<GridObject>();
             if (gridObject != null) {
                 gridObject.OnBreak();
+                AudioManager.Instance.PlayDeconstructSound();
             }
         }
 
