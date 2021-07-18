@@ -2,17 +2,17 @@ using UnityEngine;
 
 namespace Assets.Scripts.Utility.Cursor {
     public class CursorObject : MonoBehaviour {
-        [SerializeField] private CursorSettings _cursorSettings = null;
-        [SerializeField] private int _cursorNumber = 0;
+        public CursorSettings CursorSettings = null;
+        public int CursorNumber = 0;
 
         private void OnMouseEnter()
         {
-            if (_cursorSettings != null) _cursorSettings.SetCursor(_cursorNumber);
+            if (CursorSettings != null) CursorSettings.SetCursor(CursorNumber);
         }
 
         private void OnMouseExit()
         {
-            if (_cursorSettings != null) _cursorSettings.RevertCursor();
+            if (CursorSettings != null) CursorSettings.RevertCursor();
         }
     }
 }

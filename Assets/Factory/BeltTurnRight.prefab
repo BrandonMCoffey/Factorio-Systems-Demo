@@ -48,6 +48,8 @@ MonoBehaviour:
   PreviewSprite: {fileID: 21300000, guid: e0a02e2add6304247b60965603620560, type: 3}
   PreviewRenderer: {fileID: 7333822752681461123}
   Dir: 0
+  GridSize: 1
+  ConnectedObjects: []
   OutputDirection: 1
   LeftOutputSlot: {fileID: 1909111317334957349}
   RightOutputSlot: {fileID: 8255005955653920702}
@@ -102,9 +104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 1909111317334957349}
   PreviousPosition: {fileID: 746155310727558943}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0.225, y: 0.1, z: 0}
   MaxOffset: 0.4
   Offset: 0
@@ -323,9 +325,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 2900851982679122018}
   PreviousPosition: {fileID: 3149817099137601808}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0.1, y: 0.225, z: 0}
   MaxOffset: 0.4
   Offset: 0
@@ -425,9 +427,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 0}
   PreviousPosition: {fileID: 2900851982679122018}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0.25, y: 0, z: 0}
   MaxOffset: 0.4
   Offset: 0
@@ -558,9 +560,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 8255005955653920702}
   PreviousPosition: {fileID: 0}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0, y: 0.25, z: 0}
   MaxOffset: 0.4
   Offset: 0
@@ -660,9 +662,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 746155310727558943}
   PreviousPosition: {fileID: 3658853461242342748}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0, y: 0.25, z: 0}
   MaxOffset: 0.4
   Offset: 0
@@ -762,9 +764,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 0}
   PreviousPosition: {fileID: 8366341846518967090}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0.175, y: 0.175, z: 0}
   MaxOffset: 0.4
   Offset: 0
@@ -864,9 +866,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d88ea0ca6e343f40991d56830243169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Item: {fileID: 0}
   NextPosition: {fileID: 3149817099137601808}
   PreviousPosition: {fileID: 0}
-  Item: {fileID: 0}
   PathForAnimation: {x: 0, y: 0.25, z: 0}
   MaxOffset: 0.4
   Offset: 0

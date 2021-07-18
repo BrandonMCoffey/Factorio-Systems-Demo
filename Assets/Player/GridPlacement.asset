@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afe23401d0882584db67864bddedc17a, type: 3}
   m_Name: GridPlacement
   m_EditorClassIdentifier: 
+  CursorSettings: {fileID: 11400000, guid: f1eaa839bfa317741b81f31fed2a0b83, type: 2}
   SelectedFactory: {fileID: 7259593811706561338, guid: 4d9f12326a9b91143a7c1c942d40557c, type: 3}
   Direction: 0
   Active: 1

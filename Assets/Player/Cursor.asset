@@ -18,7 +18,6 @@ MonoBehaviour:
     FrameRate: 0
     Offset: {x: 10, y: 10}
   - TextureArray:
-    - {fileID: 2800000, guid: c7c0c68e14b1c1d4a91aaab117f8ad33, type: 3}
-    - {fileID: 2800000, guid: 06852ea8ab2c917469e4544b2de9c6bc, type: 3}
-    FrameRate: 0.1
-    Offset: {x: 16, y: 16}
+    - {fileID: 2800000, guid: a2ee49f45dcae0c44a04a399a6ce5c15, type: 3}
+    FrameRate: 0
+    Offset: {x: 10, y: 10}

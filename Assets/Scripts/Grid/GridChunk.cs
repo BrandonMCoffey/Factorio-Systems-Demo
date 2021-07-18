@@ -17,12 +17,17 @@ namespace Assets.Scripts.Grid {
 
         private BoxCollider _collider;
 
+        private Transform _factoryLargeObjects;
+
         private void Start()
         {
             DrawGrid();
             _collider = gameObject.AddComponent<BoxCollider>();
             _collider.center = new Vector3(8, 8, 0.1f);
             _collider.size = new Vector3(Width, Height, 0.2f);
+            _factoryLargeObjects = new GameObject("Large Factories").transform;
+            _factoryLargeObjects.SetParent(transform);
+            _factoryLargeObjects.transform.localPosition = Vector3.zero;
         }
 
         public void PreviewPlacement(GridPlacement placementData, Vector3 worldPos)
@@ -34,7 +39,45 @@ namespace Assets.Scripts.Grid {
 
         public void PlaceObject(GridPlacement placementData, Vector3 worldPos)
         {
-            AddObject(WorldToChunkGrid(worldPos.x, worldPos.y), placementData.Direction, placementData.SelectedFactory);
+            int size = placementData.SelectedFactory.GridSize;
+
+            if (size == 1) {
+                AddObject(WorldToChunkGrid(worldPos.x, worldPos.y), placementData.Direction, placementData.SelectedFactory);
+            } else if (size == 3) {
+                Position basePos = WorldToChunkGrid(worldPos.x, worldPos.y);
+                Direction dir = placementData.Direction;
+
+                GridObject north;
+                Position pos = basePos.GetRelativePosition(0, 2);
+                if (pos.Y > Height && NorthNeighbor != null) {
+                    pos = pos.GetRelativePosition(0, -Height);
+                    north = NorthNeighbor._grid.ContainsKey(pos) ? NorthNeighbor._grid[pos] : null;
+                } else {
+                    north = _grid.ContainsKey(pos) ? _grid[pos] : null;
+                }
+                pos = basePos.GetRelativePosition(2, 0);
+                GridObject east = _grid.ContainsKey(pos) ? _grid[pos] : null;
+                pos = basePos.GetRelativePosition(0, -2);
+                GridObject south = _grid.ContainsKey(pos) ? _grid[pos] : null;
+                pos = basePos.GetRelativePosition(-2, 0);
+                GridObject west = _grid.ContainsKey(pos) ? _grid[pos] : null;
+                AddObject(basePos, dir, placementData.SelectedFactory, true, new FactoryNeighbors(north, east, south, west, dir));
+                FactoryObject factoryObject = _grid[basePos].FactoryObject;
+
+                AddObject(basePos.GetRelativePosition(0, 1), dir, factoryObject, false);
+                AddObject(basePos.GetRelativePosition(1, 1), dir, null, false);
+                AddObject(basePos.GetRelativePosition(1, 0), dir, factoryObject, false);
+                AddObject(basePos.GetRelativePosition(1, -1), dir, null, false);
+                AddObject(basePos.GetRelativePosition(0, -1), dir, factoryObject, false);
+                AddObject(basePos.GetRelativePosition(-1, -1), dir, null, false);
+                AddObject(basePos.GetRelativePosition(-1, 0), dir, factoryObject, false);
+                AddObject(basePos.GetRelativePosition(-1, 1), dir, null, false);
+
+                //List<GridObject> northNeighbors = new List<GridObject> {_grid[basePos.GetRelativePosition(-1, 2)], _grid[basePos.GetRelativePosition(0, 2)], _grid[basePos.GetRelativePosition(1, 2)]};
+                //List<GridObject> eastNeighbors = new List<GridObject> {_grid[basePos.GetRelativePosition(2, -1)], _grid[basePos.GetRelativePosition(2, 0)], _grid[basePos.GetRelativePosition(2, 1)]};
+                //List<GridObject> southNeighbors = new List<GridObject> {_grid[basePos.GetRelativePosition(-1, -2)], _grid[basePos.GetRelativePosition(0, -2)], _grid[basePos.GetRelativePosition(1, -2)]};
+                //List<GridObject> westNeighbors = new List<GridObject> {_grid[basePos.GetRelativePosition(-2, -1)], _grid[basePos.GetRelativePosition(-2, 0)], _grid[basePos.GetRelativePosition(-2, 1)]};
+            }
         }
 
         public void RemoveObject(Position pos)
@@ -42,7 +85,7 @@ namespace Assets.Scripts.Grid {
             _grid.Remove(pos);
         }
 
-        private void AddObject(Position pos, Direction dir, FactoryObject factoryObject)
+        private void AddObject(Position pos, Direction dir, FactoryObject factoryObject, bool instantiate = true, FactoryNeighbors customNeighbors = null)
         {
             if (_grid.ContainsKey(pos)) return;
 
@@ -59,8 +102,13 @@ namespace Assets.Scripts.Grid {
             if (gridObject.SouthNeighbor != null) gridObject.SouthNeighbor.NorthNeighbor = gridObject;
             if (gridObject.WestNeighbor != null) gridObject.WestNeighbor.EastNeighbor = gridObject;
 
-            gridObject.FactoryObject = Instantiate(factoryObject.gameObject, gridObject.transform).GetComponent<FactoryObject>();
-            gridObject.FactoryObject.Setup(gridObject, dir);
+            if (instantiate) {
+                gridObject.FactoryObject = Instantiate(factoryObject, gridObject.transform).GetComponent<FactoryObject>();
+                gridObject.FactoryObject.Setup(gridObject, dir, customNeighbors);
+            } else {
+                gridObject.FactoryObject = factoryObject;
+            }
+            if (gridObject.FactoryObject != null) gridObject.FactoryObject.ConnectedObjects.Add(gridObject);
 
             gridObject.Chunk = this;
             gridObject.ChunkPosition = pos;

@@ -14,9 +14,9 @@ namespace Assets.Scripts.Factory {
         public FactoryBeltItem RightInputSlot = null;
         public List<FactoryBeltItem> OtherSlots = new List<FactoryBeltItem>();
 
-        public override void Setup(GridObject gridObject, Direction dir)
+        public override void Setup(GridObject gridObject, Direction dir, FactoryNeighbors customNeighbors = null)
         {
-            base.Setup(gridObject, dir);
+            base.Setup(gridObject, dir, customNeighbors);
             FactoryBelt frontBelt = Neighbors.GetSide(OutputDirection)?.GetComponent<FactoryBelt>();
             if (frontBelt != null && MatchesIO(frontBelt.InputDirection, frontBelt.Dir, OutputDirection)) {
                 //Fix weird cases
@@ -44,6 +44,16 @@ namespace Assets.Scripts.Factory {
             FactoryCreativeOutput creativeOutput = Neighbors.GetSide(InputDirection)?.GetComponent<FactoryCreativeOutput>();
             if (creativeOutput != null) {
                 creativeOutput.AddBelt(this);
+            }
+            FactoryAssembler assembler = Neighbors.GetSide(InputDirection)?.GetComponent<FactoryAssembler>();
+            if (assembler != null) {
+                if (Dir == assembler.Dir) {
+                    assembler.AddBelt(this, true);
+                }
+            }
+            assembler = Neighbors.GetSide(OutputDirection)?.GetComponent<FactoryAssembler>();
+            if (assembler != null) {
+                assembler.AddBelt(this, false);
             }
         }
 

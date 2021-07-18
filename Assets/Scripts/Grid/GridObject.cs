@@ -4,17 +4,16 @@ using UnityEngine;
 namespace Assets.Scripts.Grid {
     [RequireComponent(typeof(BoxCollider))]
     public class GridObject : MonoBehaviour {
-        public GridObject NorthNeighbor = null;
-        public GridObject EastNeighbor = null;
-        public GridObject SouthNeighbor = null;
-        public GridObject WestNeighbor = null;
+        public GridObject NorthNeighbor;
+        public GridObject EastNeighbor;
+        public GridObject SouthNeighbor;
+        public GridObject WestNeighbor;
 
         public GridChunk Chunk = null;
 
         public Position ChunkPosition;
 
         public FactoryObject FactoryObject;
-        public GameObject FactoryVisual;
 
         private BoxCollider _collider;
 
@@ -32,7 +31,15 @@ namespace Assets.Scripts.Grid {
 
         public void OnBreak()
         {
-            FactoryObject.OnBreak();
+            if (FactoryObject != null) {
+                FactoryObject.OnBreak();
+            } else {
+                Deconstruct();
+            }
+        }
+
+        public void Deconstruct()
+        {
             if (NorthNeighbor != null) NorthNeighbor.SouthNeighbor = null;
             if (EastNeighbor != null) EastNeighbor.WestNeighbor = null;
             if (SouthNeighbor != null) SouthNeighbor.NorthNeighbor = null;
@@ -50,6 +57,11 @@ namespace Assets.Scripts.Grid {
         {
             X = x;
             Y = y;
+        }
+
+        public Position GetRelativePosition(int x, int y)
+        {
+            return new Position(X + x, Y + y);
         }
 
         public Vector3 GetLocalPosition()

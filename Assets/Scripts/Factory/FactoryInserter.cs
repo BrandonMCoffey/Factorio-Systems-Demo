@@ -19,9 +19,9 @@ namespace Assets.Scripts.Factory {
 
         private InserterOperation _operation = InserterOperation.WaitingForItem;
 
-        public override void Setup(GridObject gridObject, Direction dir)
+        public override void Setup(GridObject gridObject, Direction dir, FactoryNeighbors customNeighbors = null)
         {
-            base.Setup(gridObject, dir);
+            base.Setup(gridObject, dir, customNeighbors);
             FactoryObject outputNeighbor = Neighbors.GetSide(OutputDirection);
             if (outputNeighbor != null) {
                 FactoryBelt belt = outputNeighbor.GetComponent<FactoryBelt>();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Assets.Scripts.Grid;
 using UnityEngine;
 
@@ -6,14 +7,22 @@ namespace Assets.Scripts.Factory.Base {
         public Sprite PreviewSprite;
         public SpriteRenderer PreviewRenderer = null;
         public Direction Dir;
+        public int GridSize = 1;
         internal FactoryNeighbors Neighbors;
 
-        public virtual void Setup(GridObject gridObject, Direction dir)
+        public List<GridObject> ConnectedObjects = new List<GridObject>();
+
+        public virtual void Setup(GridObject gridObject, Direction dir, FactoryNeighbors customNeighbors = null)
         {
             transform.localPosition = new Vector3(0.5f, 0.5f);
             transform.rotation = Position.GetRotationFromDirection(dir);
-            Neighbors = new FactoryNeighbors(gridObject, dir);
+            Neighbors = customNeighbors ?? new FactoryNeighbors(gridObject, dir);
             Dir = dir;
+        }
+
+        public void CustomNeighbors(GridObject north, GridObject east, GridObject south, GridObject west, Direction dir)
+        {
+            Neighbors = new FactoryNeighbors(north, east, south, west, dir);
         }
 
         public virtual void OnSelect()
@@ -22,11 +31,14 @@ namespace Assets.Scripts.Factory.Base {
 
         public virtual void OnBreak()
         {
+            foreach (var obj in ConnectedObjects) {
+                obj.Deconstruct();
+            }
             Destroy(gameObject);
         }
     }
 
-    internal class FactoryNeighbors {
+    public class FactoryNeighbors {
         private FactoryObject _north;
         private FactoryObject _east;
         private FactoryObject _south;
@@ -39,6 +51,15 @@ namespace Assets.Scripts.Factory.Base {
             _east = obj.EastNeighbor != null ? obj.EastNeighbor.FactoryObject : null;
             _south = obj.SouthNeighbor != null ? obj.SouthNeighbor.FactoryObject : null;
             _west = obj.WestNeighbor != null ? obj.WestNeighbor.FactoryObject : null;
+            _facing = facing;
+        }
+
+        public FactoryNeighbors(GridObject north, GridObject east, GridObject south, GridObject west, Direction facing)
+        {
+            _north = north != null ? north.FactoryObject : null;
+            _east = east != null ? east.FactoryObject : null;
+            _south = south != null ? south.FactoryObject : null;
+            _west = west != null ? west.FactoryObject : null;
             _facing = facing;
         }
 

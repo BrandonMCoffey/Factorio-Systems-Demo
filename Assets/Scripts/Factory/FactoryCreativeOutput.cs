@@ -9,9 +9,9 @@ namespace Assets.Scripts.Factory {
 
         private List<FactoryBelt> _outputBelts = new List<FactoryBelt>();
 
-        public override void Setup(GridObject gridObject, Direction dir)
+        public override void Setup(GridObject gridObject, Direction dir, FactoryNeighbors customNeighbors = null)
         {
-            base.Setup(gridObject, dir);
+            base.Setup(gridObject, dir, customNeighbors);
             FactoryObject northFactory = Neighbors.GetNeighbor(Direction.North);
             if (northFactory != null) {
                 FactoryBelt belt = northFactory.GetComponent<FactoryBelt>();
